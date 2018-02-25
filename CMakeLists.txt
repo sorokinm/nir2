@@ -3,5 +3,5 @@ project(nir2)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp picaro/round_function.c)
+set(SOURCE_FILES main.cpp picaro/round_function.c picaro/sbox_picaro.c)
 add_executable(nir2 ${SOURCE_FILES})
