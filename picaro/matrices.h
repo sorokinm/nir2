@@ -1,5 +1,12 @@
+#ifndef NIR2_MATRIX_H
+#define NIR2_MATRIX_H
 
-// Expansion matrix for the Picaro cipher
+/** Picaro cipher modulo polynomial
+ *  x^8 + x^4 + x^3 + x^2 + 1 or 0b1_0001_1101 or 0x11D
+ */
+const unsigned char PICARO_MODULO_POLYNOMIAL = 0x11D;
+
+/** Expansion matrix for the Picaro cipher  */
 const unsigned char expand_matrix[8][14] =
         {
         //       0x00  0x01  0x02  0x03  0x04  0x05  0x06  0x07  0x08  0x09  0x0a  0x0b  0x0c  0x0d
@@ -13,7 +20,7 @@ const unsigned char expand_matrix[8][14] =
                 {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x0a, 0x01, 0x09, 0x0c, 0x06}
         };
 
-// Compression matrix for the Picaro cipher
+/** Compression matrix for the Picaro cipher  */
 const unsigned char compress_matrix[14][8] =
         {
         //       0x00  0x01  0x02  0x03  0x04  0x05  0x06  0x07
@@ -32,3 +39,5 @@ const unsigned char compress_matrix[14][8] =
                 {0x09, 0x01, 0x0a, 0x01, 0x01, 0x05, 0x06, 0x0c},
                 {0x0c, 0x09, 0x01, 0x0a, 0x01, 0x01, 0x05, 0x06}
         };
+
+#endif //NIR2_MATRIX_H
