@@ -1,8 +1,12 @@
+#include <stdio.h>
 #include "sbox_picaro.h"
 #include "matrices.h"
 #include "galois_arithmetics.h"
 
+
+
 #define BUFFER_SIZE 14
+void print_array_hex(unsigned char* arr, int len);
 
 
 void key_add(unsigned char * text, unsigned char * key, unsigned size) {
@@ -62,15 +66,51 @@ int round_transform(unsigned char* vector, unsigned vector_size, unsigned char* 
     return 0;
 }
 
-void round_step(unsigned char* double_vector, unsigned dv_size, unsigned char* round_key, unsigned key_size) {
+void round_step(unsigned char* double_vector, unsigned char* round_key, unsigned key_size) {
     unsigned char tmp_buffer[8] = {0};
     for (int i = 0; i < 8; ++i) {
         tmp_buffer[i] = double_vector[i];
     }
+
+#ifdef DEBUG
+    printf("before transform: ");
+    print_array_hex(tmp_buffer, 8);
+#endif
     round_transform(tmp_buffer, 8, round_key, key_size);
+#ifdef DEBUG
+    printf("After transform: ");
+    print_array_hex(tmp_buffer, 8);
+#endif
     for (int i = 0; i < 8; ++i) {
         tmp_buffer[i] ^= double_vector[i + 8];
         double_vector[i + 8] = double_vector[i];
         double_vector[i] = tmp_buffer[i];
     }
+}
+
+void swap_parts(unsigned char* buffer) {
+    for (int i = 0; i < 8; ++i) {
+        unsigned char tmp = buffer[i];
+        buffer[i] = buffer[i + 8];
+        buffer[i + 8] = tmp;
+    }
+}
+
+void crypt_picaro(unsigned char* buffer, unsigned char** keys, unsigned round_number) {
+    for (int i = 0; i < round_number; ++i) {
+        round_step(buffer, keys[i], 14);
+
+#ifdef DEBUG
+        print_array_hex(buffer, 16);
+#endif
+
+    }
+    swap_parts(buffer);
+}
+
+void print_array_hex(unsigned char* arr, int len) {
+    for (int i = 0; i < len; ++i) {
+        printf("%02x ", arr[i]);
+    }
+    printf("\n");
 }

@@ -4,7 +4,7 @@
 /** Picaro cipher modulo polynomial
  *  x^8 + x^4 + x^3 + x^2 + 1 or 0b1_0001_1101 or 0x11D
  */
-const unsigned char PICARO_MODULO_POLYNOMIAL = 0x11D;
+const unsigned char PICARO_MODULO_POLYNOMIAL = 0x1D;
 
 /** Expansion matrix for the Picaro cipher  */
 const unsigned char expand_matrix[8][14] =
