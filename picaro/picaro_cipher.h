@@ -4,5 +4,6 @@
 void round_step(unsigned char* double_vector, unsigned char* round_key, unsigned key_size);
 void swap_parts(unsigned char* buffer);
 void crypt_picaro(unsigned char* buffer, unsigned char** keys, unsigned round_number);
+unsigned char s_box(unsigned index);
 
 #endif //NIR2_PICARO_CIPHER_H

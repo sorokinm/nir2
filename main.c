@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "picaro/picaro_cipher.h"
+#include "picaro/integral_properties_check.h"
 
 #define ROUND_NUM 12
 #define KEY_SIZE 14
@@ -12,9 +13,36 @@ void reverse_fake_keys (unsigned char** keys, int round_number);
 
 
 int main() {
-    printf("Hello!\n");
     long a = 0x010203040506;
     long b = 0x0305c31405a637f8;
+
+    unsigned char** input_blocks = generate_set_with_one_A_prop(0, 16, 1);
+    printf("before encryption\n");
+    print_vector_of_properties(input_blocks, 16);
+    unsigned char res = 0;
+    int res_cnt[256] = {0};
+
+
+    for (int i = 0; i < 256; ++i) {
+        res_cnt[i] = s_box(i);
+        res ^= s_box(i);
+    }
+    printf("after first = %02x\n", res);
+    res = 0;
+    for (int i = 0; i < 256; ++i) {
+        res_cnt[i] = s_box(res_cnt[i]);
+        res ^= res_cnt[i];
+    }
+    printf("after second = %02x\n", res);
+    res = 0;
+    for (int i = 0; i < 256; ++i) {
+        res ^= s_box(res_cnt[i]);
+    }
+    printf("%02x\n", res);
+    for (int i = 0; i < 256; ++i) {
+        printf("%d ", res_cnt[i]);
+    }
+    printf("\n");
 
     unsigned char key[8];
     *((long*)key) = a;

@@ -8,6 +8,7 @@
 #define BUFFER_SIZE 14
 void print_array_hex(unsigned char* arr, int len);
 
+unsigned char s_box(unsigned index);
 
 void key_add(unsigned char * text, unsigned char * key, unsigned size) {
     for (int i = 0; i < size; ++i) {
@@ -28,6 +29,10 @@ int expand_vector(unsigned char* buffer, unsigned buffer_size, unsigned char* ve
         buffer[i] = tmp_res;
     }
     return 0;
+}
+
+unsigned char s_box(unsigned index) {
+    return sbox_picaro[index];
 }
 
 void substitution_layer(unsigned char* buffer, unsigned buffer_size) {
