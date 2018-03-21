@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "picaro/picaro_cipher.h"
 #include "picaro/integral_properties_check.h"
 
@@ -10,6 +11,7 @@ unsigned char** fake_key_generator(int round_number, int key_size_in_bytes, int 
 
 void free_key_space(unsigned char** buf, int round_number);
 void reverse_fake_keys (unsigned char** keys, int round_number);
+void round_step_for_integral_set(unsigned char** set, unsigned char* round_key);
 
 
 int main() {
@@ -19,33 +21,48 @@ int main() {
     unsigned char** input_blocks = generate_set_with_one_A_prop(0, 16, 1);
     printf("before encryption\n");
     print_vector_of_properties(input_blocks, 16);
-    unsigned char res = 0;
-    int res_cnt[256] = {0};
 
-
-    for (int i = 0; i < 256; ++i) {
-        res_cnt[i] = s_box(i);
-        res ^= s_box(i);
-    }
-    printf("after first = %02x\n", res);
-    res = 0;
-    for (int i = 0; i < 256; ++i) {
-        res_cnt[i] = s_box(res_cnt[i]);
-        res ^= res_cnt[i];
-    }
-    printf("after second = %02x\n", res);
-    res = 0;
-    for (int i = 0; i < 256; ++i) {
-        res ^= s_box(res_cnt[i]);
-    }
-    printf("%02x\n", res);
-    for (int i = 0; i < 256; ++i) {
-        printf("%d ", res_cnt[i]);
-    }
-    printf("\n");
+    srand(time(NULL));
 
     unsigned char key[8];
     *((long*)key) = a;
+
+    for (int i = 0; i < 12; ++i) {
+        if (i % 2) {
+            *((long*)key) = ((long)(rand()) << 32) + (long)(rand());
+        } else {
+            *((long*)key) = b;
+        }
+        round_step_for_integral_set(input_blocks, key);
+        print_vector_of_properties(input_blocks, 16);
+    }
+
+
+
+    //unsigned char res = 0;
+    //int res_cnt[256] = {0};
+
+//
+//    for (int i = 0; i < 256; ++i) {
+//        res_cnt[i] = s_box(i);
+//        res ^= s_box(i);
+//    }
+//    printf("after first = %02x\n", res);
+//    res = 0;
+//    for (int i = 0; i < 256; ++i) {
+//        res_cnt[i] = s_box(res_cnt[i]);
+//        res ^= res_cnt[i];
+//    }
+//    printf("after second = %02x\n", res);
+//    res = 0;
+//    for (int i = 0; i < 256; ++i) {
+//        res ^= s_box(res_cnt[i]);
+//    }
+//    printf("%02x\n", res);
+//    for (int i = 0; i < 256; ++i) {
+//        printf("%d ", res_cnt[i]);
+//    }
+//    printf("\n");
 
     unsigned char buf[16] = {0};
     *((long*)buf) = a;
@@ -67,7 +84,7 @@ int main() {
 
     crypt_picaro(buf, keys, ROUND_NUM);
 
-    //round_step(buf, key, 8);
+    round_step(buf, key, 8);
     //swap_parts(buf);
     //round_step(buf, key, 8);
     //swap_parts(buf);
@@ -116,5 +133,11 @@ void reverse_fake_keys (unsigned char** keys, int round_number) {
             keys[i][j] = keys[round_number - i - 1][j];
             keys[round_number - i - 1][j] = tmp;
         }
+    }
+}
+
+void round_step_for_integral_set(unsigned char** set, unsigned char* round_key) {
+    for (int i = 0; i < 256; ++i) {
+        round_step(set[i], round_key, 8);
     }
 }
